@@ -23,9 +23,14 @@ class AudioPlayer: NSObject, AVAudioPlayerDelegate {
     func preparePlayer(path: String?, volume: Double?, updateFrequency: Int?,result: @escaping FlutterResult, overrideAudioSession : Bool) {
         if(!(path ?? "").isEmpty) {
             self.updateFrequency = updateFrequency ?? 200
-            let audioUrl = URL.init(string: path!)
+            let audioUrl: URL?
+            if path!.hasPrefix("http://") || path!.hasPrefix("https://") {
+                audioUrl = URL(string: path!)
+            } else {
+                audioUrl = URL(fileURLWithPath: path!)
+            }
             if(audioUrl == nil){
-                result(FlutterError(code: Constants.audioWaveforms, message: "Failed to initialise Url from provided audio file", details: "If path contains `file://` try removing it"))
+                result(FlutterError(code: Constants.audioWaveforms, message: "Failed to initialise Url from provided audio file", details: nil))
                 return
             }
             do {
