@@ -18,7 +18,8 @@ struct RecordingSettings {
     var linearPCMBitDepth : Int
     var linearPCMIsBigEndian : Bool
     var linearPCMIsFloat : Bool
-    
+    var useBytesStreamEngine : Bool
+
     static func fromJson(_ json: [String: Any]) -> RecordingSettings {
         let path = json[Constants.path] as? String
         let encoder = json[Constants.encoder] as? Int
@@ -30,7 +31,8 @@ struct RecordingSettings {
         let linearPCMBitDepth = json[Constants.linearPCMBitDepth] as? Int ?? 16
         let linearPCMIsBigEndian = json[Constants.linearPCMIsBigEndian] as? Bool ?? false
         let linearPCMIsFloat = json[Constants.linearPCMIsFloat] as? Bool ?? false
-        
+        let useBytesStreamEngine = json[Constants.useBytesStreamEngine] as? Bool ?? false
+
         return RecordingSettings(
             path: path,
             encoder: encoder,
@@ -41,7 +43,8 @@ struct RecordingSettings {
             overrideAudioSession: overrideAudioSession,
             linearPCMBitDepth: linearPCMBitDepth,
             linearPCMIsBigEndian: linearPCMIsBigEndian,
-            linearPCMIsFloat: linearPCMIsFloat
+            linearPCMIsFloat: linearPCMIsFloat,
+            useBytesStreamEngine: useBytesStreamEngine
         )
     }
 }

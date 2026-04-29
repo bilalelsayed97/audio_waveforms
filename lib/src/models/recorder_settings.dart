@@ -15,6 +15,7 @@ class RecorderSettings {
     this.iosEncoderSettings = const IosEncoderSetting(),
     this.sampleRate = 44100,
     this.bitRate = 128000,
+    this.useBytesStreamEngine = false,
   });
 
   /// Encoder settings for Android devices.
@@ -31,6 +32,13 @@ class RecorderSettings {
   /// Higher values provide better quality but larger file sizes.
   final int bitRate;
 
+  /// iOS only. When `true`, an AVAudioEngine tap is installed alongside
+  /// AVAudioRecorder to stream raw PCM chunks to Dart via [Constants.onAudioChunk].
+  /// Off by default because running both audio graphs at once contends for the
+  /// input bus and can produce empty M4A files. Enable only if you actually
+  /// consume the byte-stream channel.
+  final bool useBytesStreamEngine;
+
   /// Converts the RecorderSettings instance to a JSON map for iOS.
   Map<String, dynamic> iosToJson({
     String? path,
@@ -45,6 +53,7 @@ class RecorderSettings {
         Constants.linearPCMBitDepth: iosEncoderSettings.linearPCMBitDepth,
         Constants.linearPCMIsBigEndian: iosEncoderSettings.linearPCMIsBigEndian,
         Constants.linearPCMIsFloat: iosEncoderSettings.linearPCMIsFloat,
+        Constants.useBytesStreamEngine: useBytesStreamEngine,
       };
 
   /// Converts the RecorderSettings instance to a JSON map for Android.

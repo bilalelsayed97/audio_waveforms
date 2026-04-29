@@ -1,6 +1,7 @@
 ## 2.1.0 (#unreleased)
 
 - Feature [#468](https://github.com/SimformSolutionsPvtLtd/audio_waveforms/pull/468) - Add macOS support
+- Fixed - iOS recordings produced an empty 28-byte M4A file (only the `ftyp` atom) on real devices. Root cause was the AVAudioEngine bytes-stream tap running alongside AVAudioRecorder, which triggered a HAL reconfigure mid-cycle and prevented codec init. The bytes-stream engine is now opt-in via `RecorderSettings.useBytesStreamEngine` (default `false`). Existing decibel-based waveform display is unaffected.
 
 ## 2.0.2
 

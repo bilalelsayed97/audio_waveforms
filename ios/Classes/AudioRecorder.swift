@@ -59,15 +59,26 @@ public class AudioRecorder: NSObject, AVAudioRecorderDelegate{
                 return
             }
             audioRecorder = try AVAudioRecorder(url: audioUrl!, settings: settings as [String : Any])
-            
+
             audioRecorder?.delegate = self
             audioRecorder?.isMeteringEnabled = true
-            audioRecorder?.record()
-            bytesStreamEngine
-                .attach(
-                    result: result,
-                    sampleRate:  recordingSettings.sampleRate ?? Constants.defaultSampleRate
-                )
+            let didStart = audioRecorder?.record() ?? false
+            if !didStart {
+                result(FlutterError(code: Constants.audioWaveforms, message: "AVAudioRecorder.record() returned false", details: nil))
+                return
+            }
+            // The bytes-stream engine spins up a second AVAudioEngine and taps the
+            // input bus. Running it alongside AVAudioRecorder triggers a HAL
+            // reconfigure mid-cycle on iOS, which leaves AVAudioRecorder writing
+            // only the M4A `ftyp` header (28-byte empty file). Off by default;
+            // opt in via RecorderSettings.useBytesStreamEngine.
+            if recordingSettings.useBytesStreamEngine {
+                bytesStreamEngine
+                    .attach(
+                        result: result,
+                        sampleRate:  recordingSettings.sampleRate ?? Constants.defaultSampleRate
+                    )
+            }
             result(true)
         } catch {
             result(FlutterError(code: Constants.audioWaveforms, message: "Failed to start recording", details: error.localizedDescription))

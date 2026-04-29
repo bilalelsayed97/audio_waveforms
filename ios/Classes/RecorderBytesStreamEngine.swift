@@ -14,6 +14,7 @@ class RecorderBytesStreamEngine {
     private var flutterChannel: FlutterMethodChannel
     private var paused: Bool = false
     private var totalFrames: AVAudioFramePosition = 0
+    private(set) var isAttached: Bool = false
 
     init(channel: FlutterMethodChannel) {
         flutterChannel = channel
@@ -39,19 +40,24 @@ class RecorderBytesStreamEngine {
         }
         do {
             try audioEngine.start()
+            isAttached = true
         } catch {
            result(FlutterError(code: Constants.audioWaveforms, message: "Error starting Audio Engine", details: error.localizedDescription))
         }
     }
 
     func togglePause() {
+        guard isAttached else { return }
         paused = !paused
     }
 
     func detach() {
+        guard isAttached else { return }
         totalFrames = 0
         audioEngine.inputNode.removeTap(onBus: 0)
         audioEngine.stop()
+        paused = false
+        isAttached = false
     }
 
     private func convertToFlutterType(_ buffer: AVAudioPCMBuffer) -> (FlutterStandardTypedData, Double)? {

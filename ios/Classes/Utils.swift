@@ -72,6 +72,7 @@ struct Constants {
     static let bytes = "bytes"
     static let normalisedRms = "normalisedRms"
     static let recordedDuration = "recordedDuration"
+    static let useBytesStreamEngine = "useBytesStreamEngine"
     static let defaultSampleRate = 44100
 }
 
